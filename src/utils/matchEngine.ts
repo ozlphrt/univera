@@ -840,48 +840,61 @@ function generateExplanation(
 
 // Main match function (Simple Mode)
 // Can accept colleges from API or use sample data
+// Note: If colleges are already filtered, pass skipFiltering=true to avoid double filtering
 export function matchColleges(
   answers: OnboardingAnswer[],
-  colleges: College[] = SAMPLE_COLLEGES
+  colleges: College[] = SAMPLE_COLLEGES,
+  skipFiltering: boolean = false
 ): CollegeFitResult[] {
-  // Filter colleges by ALL preferences BEFORE matching
-  const geographicAnswer = answers.find((a) => a.questionId === 'geographic-preference');
-  const majorAnswer = answers.find((a) => a.questionId === 'major-selection');
-  const environmentAnswer = answers.find((a) => a.questionId === 'campus-environment');
-  const sizeAnswer = answers.find((a) => a.questionId === 'school-size');
-  
   let filteredColleges = [...colleges];
   
-  // Filter by geographic preferences
-  if (geographicAnswer) {
-    const geographicPreferences = Array.isArray(geographicAnswer.value) 
-      ? geographicAnswer.value 
-      : [geographicAnswer.value];
-    filteredColleges = filterCollegesByLocation(filteredColleges, geographicPreferences);
-  }
-  
-  // Filter by major preferences
-  if (majorAnswer) {
-    const majorPreferences = Array.isArray(majorAnswer.value) 
-      ? majorAnswer.value 
-      : [majorAnswer.value];
-    filteredColleges = filterCollegesByMajor(filteredColleges, majorPreferences);
-  }
-  
-  // Filter by campus environment preferences
-  if (environmentAnswer) {
-    const environmentPreferences = Array.isArray(environmentAnswer.value) 
-      ? environmentAnswer.value 
-      : [environmentAnswer.value];
-    filteredColleges = filterCollegesByEnvironment(filteredColleges, environmentPreferences);
-  }
-  
-  // Filter by school size preferences
-  if (sizeAnswer) {
-    const sizePreferences = Array.isArray(sizeAnswer.value) 
-      ? sizeAnswer.value 
-      : [sizeAnswer.value];
-    filteredColleges = filterCollegesBySize(filteredColleges, sizePreferences);
+  // Only filter if not already filtered (skipFiltering flag)
+  if (!skipFiltering) {
+    // Filter colleges by ALL preferences BEFORE matching
+    const geographicAnswer = answers.find((a) => a.questionId === 'geographic-preference');
+    const majorAnswer = answers.find((a) => a.questionId === 'major-selection');
+    const environmentAnswer = answers.find((a) => a.questionId === 'campus-environment');
+    const sizeAnswer = answers.find((a) => a.questionId === 'school-size');
+    
+    // Filter by geographic preferences
+    if (geographicAnswer) {
+      const geographicPreferences = Array.isArray(geographicAnswer.value) 
+        ? geographicAnswer.value 
+        : [geographicAnswer.value];
+      if (geographicPreferences.length > 0 && !geographicPreferences.includes('no-preference')) {
+        filteredColleges = filterCollegesByLocation(filteredColleges, geographicPreferences);
+      }
+    }
+    
+    // Filter by major preferences
+    if (majorAnswer) {
+      const majorPreferences = Array.isArray(majorAnswer.value) 
+        ? majorAnswer.value 
+        : [majorAnswer.value];
+      if (majorPreferences.length > 0) {
+        filteredColleges = filterCollegesByMajor(filteredColleges, majorPreferences);
+      }
+    }
+    
+    // Filter by campus environment preferences
+    if (environmentAnswer) {
+      const environmentPreferences = Array.isArray(environmentAnswer.value) 
+        ? environmentAnswer.value 
+        : [environmentAnswer.value];
+      if (environmentPreferences.length > 0) {
+        filteredColleges = filterCollegesByEnvironment(filteredColleges, environmentPreferences);
+      }
+    }
+    
+    // Filter by school size preferences
+    if (sizeAnswer) {
+      const sizePreferences = Array.isArray(sizeAnswer.value) 
+        ? sizeAnswer.value 
+        : [sizeAnswer.value];
+      if (sizePreferences.length > 0) {
+        filteredColleges = filterCollegesBySize(filteredColleges, sizePreferences);
+      }
+    }
   }
   
   // If filtering resulted in no colleges, return empty array

@@ -157,11 +157,17 @@ export const DashboardScreen = () => {
               collegesData = SAMPLE_COLLEGES;
             }
             
-            const matchResults = matchColleges(answers, collegesData);
+            // Log college IDs before matching
+            console.log('Colleges before matching:', collegesData.map(c => ({ id: c.id, name: c.name })));
+            
+            // Skip filtering in matchColleges since we've already filtered
+            const matchResults = matchColleges(answers, collegesData, true);
             console.log(`Matching ${collegesData.length} colleges, got ${matchResults.length} results`);
+            console.log('Match results:', matchResults.map(r => ({ collegeId: r.collegeId, fitScore: r.fitScore })));
             
             const collegesWithFit = collegesData.map((college) => {
               const match = matchResults.find((r) => r.collegeId === college.id);
+              console.log(`Finding match for college ${college.id}:`, match ? 'found' : 'not found');
               // Ensure logo is set - use existing logo or generate from name
               let logo = college.logo;
               if (!logo || logo === '') {
