@@ -19,8 +19,8 @@ export default defineConfig({
         background_color: '#FAFAFA',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
+        scope: process.env.NODE_ENV === 'production' ? '/univera/' : '/',
+        start_url: process.env.NODE_ENV === 'production' ? '/univera/' : '/',
         icons: [
           {
             src: 'pwa-192x192.png',
