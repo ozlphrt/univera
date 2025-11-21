@@ -185,6 +185,31 @@ export const DashboardScreen = () => {
               console.log('College IDs:', collegesData.map(c => c.id));
             }
             
+            // If no match results but we have colleges, create basic matches
+            if (matchResults.length === 0 && collegesData.length > 0) {
+              console.warn('No match results but colleges exist. Creating basic matches...');
+              // Create basic match results for each college
+              matchResults.push(...collegesData.map(college => ({
+                collegeId: String(college.id),
+                fitScore: 50,
+                category: 'target' as const,
+                explanation: 'Basic match - detailed analysis unavailable.',
+                inputsUsed: {
+                  academicStrength: 3,
+                  extracurricularStrength: 3,
+                  preferencesMatchScore: 50,
+                  advancedModeUsed: false,
+                },
+                breakdown: {
+                  academicFit: 50,
+                  preferenceFit: 50,
+                  ecFit: 50,
+                  majorFit: 0,
+                  competitivenessAdjustment: 0,
+                },
+              })));
+            }
+            
             const collegesWithFit = collegesData.map((college) => {
               const collegeIdStr = String(college.id);
               const match = matchResults.find((r) => {
@@ -193,6 +218,33 @@ export const DashboardScreen = () => {
               });
               if (!match) {
                 console.warn(`No match found for college ${college.id} (${college.name}). Available match IDs:`, matchResults.map(r => r.collegeId));
+                // Create a basic match if none found
+                return {
+                  id: college.id,
+                  name: college.name,
+                  location: `${college.location.city}, ${college.location.state}`,
+                  type: college.type,
+                  fitScore: 50,
+                  category: 'target' as const,
+                  fitExplanation: 'Basic match - detailed analysis unavailable.',
+                  logo: college.logo,
+                  website: college.website || undefined,
+                  breakdown: {
+                    academicFit: 50,
+                    preferenceFit: 50,
+                    ecFit: 50,
+                    majorFit: 0,
+                    competitivenessAdjustment: 0,
+                  },
+                  fullData: {
+                    size: college.size,
+                    acceptanceRate: college.acceptanceRate,
+                    environment: college.environment,
+                    competitiveness: college.academics?.competitiveness,
+                    popularMajors: college.academics?.popularMajors,
+                    cost: college.cost,
+                  },
+                };
               } else {
                 console.log(`✓ Found match for ${college.name}: fitScore=${match.fitScore}`);
               }
