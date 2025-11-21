@@ -34,9 +34,22 @@ export const DashboardScreen = () => {
 
   // Regenerate colleges if onboarding is complete but colleges are missing
   useEffect(() => {
-    if (isOnboardingComplete && colleges.length === 0) {
+    console.log('Dashboard useEffect triggered', { 
+      isOnboardingComplete, 
+      collegesLength: colleges.length,
+      willRun: isOnboardingComplete && colleges.length === 0
+    });
+    
+    // Always try to load colleges if missing, even if onboarding not marked complete
+    // (in case user navigated directly or onboarding state was lost)
+    if (colleges.length === 0) {
       const regenerateColleges = async () => {
         const answersJson = localStorage.getItem('onboarding_answers');
+        console.log('Checking for onboarding answers:', { 
+          hasAnswers: !!answersJson,
+          onboardingComplete: isOnboardingComplete 
+        });
+        
         if (answersJson) {
           try {
             setIsRefreshing(true);
@@ -247,15 +260,54 @@ export const DashboardScreen = () => {
             } catch (fallbackError) {
               console.error('Fallback also failed:', fallbackError);
             }
-          } finally {
+            } finally {
             setIsRefreshing(false);
           }
         } else {
-          console.warn('No onboarding answers found in localStorage');
+          console.warn('No onboarding answers found in localStorage. Attempting to use sample data...');
+          // Even without onboarding answers, try to show some sample colleges
+          try {
+            setIsRefreshing(true);
+            const matchResults = matchColleges([], SAMPLE_COLLEGES);
+            const collegesWithFit = SAMPLE_COLLEGES.map((college) => {
+              const match = matchResults.find((r) => r.collegeId === college.id);
+              return {
+                id: college.id,
+                name: college.name,
+                location: `${college.location.city}, ${college.location.state}`,
+                type: college.type,
+                fitScore: match?.fitScore,
+                category: match?.category,
+                fitExplanation: match?.explanation,
+                logo: college.logo,
+                breakdown: match?.breakdown,
+                fullData: {
+                  size: college.size,
+                  acceptanceRate: college.acceptanceRate,
+                  environment: college.environment,
+                  competitiveness: college.academics?.competitiveness,
+                  popularMajors: college.academics?.popularMajors,
+                  cost: college.cost,
+                },
+              };
+            });
+            console.log('Using sample colleges as fallback:', collegesWithFit.length);
+            setColleges(collegesWithFit);
+            localStorage.setItem('colleges_source', 'sample-no-onboarding');
+          } catch (error) {
+            console.error('Failed to load sample colleges:', error);
+          } finally {
+            setIsRefreshing(false);
+          }
         }
       };
       
       regenerateColleges();
+    } else {
+      console.log('Skipping college regeneration:', { 
+        reason: colleges.length > 0 ? 'colleges already exist' : 'onboarding not complete',
+        collegesCount: colleges.length 
+      });
     }
   }, [isOnboardingComplete, colleges.length, setColleges]);
 
