@@ -494,10 +494,21 @@ export const DashboardScreen = () => {
       // If all categories are selected, show all
       if (selectedCategories.size === 3) return true;
       // Otherwise filter by selected categories
-      return college.category && selectedCategories.has(college.category);
+      const matches = college.category && selectedCategories.has(college.category);
+      if (!matches && colleges.length > 0) {
+        console.log(`College ${college.name} (category: ${college.category}) filtered out. Selected categories:`, Array.from(selectedCategories));
+      }
+      return matches;
     })
     .sort((a, b) => (b.fitScore || 0) - (a.fitScore || 0))
     .slice(0, 5);
+  
+  console.log('Rendering colleges:', {
+    totalColleges: colleges.length,
+    selectedCategories: Array.from(selectedCategories),
+    topCollegesCount: topColleges.length,
+    collegeCategories: colleges.map(c => ({ name: c.name, category: c.category, fitScore: c.fitScore }))
+  });
 
   const getCategoryColor = (category?: string) => {
     switch (category) {
