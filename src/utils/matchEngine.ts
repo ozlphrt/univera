@@ -921,8 +921,9 @@ export function matchColleges(
 
   // Map filtered colleges to results with temporary fields for redistribution
   const resultsWithMetadata = filteredColleges.map((college) => {
-    console.log(`Processing college: ${college.id} (${college.name})`);
-    const collegeDifficulty = getCollegeDifficulty(college.acceptanceRate);
+    try {
+      console.log(`Processing college: ${college.id} (${college.name})`);
+      const collegeDifficulty = getCollegeDifficulty(college.acceptanceRate);
     const academicFit = calculateAcademicFit(academicStrength, collegeDifficulty, college.acceptanceRate);
     const preferenceFit = calculatePreferenceFit(college, answers);
     const ecFit = calculateECFit(extracurricularStrength);
@@ -1004,28 +1005,52 @@ export function matchColleges(
     // Generate explanation (fitScore is used in generateExplanation)
     const explanation = generateExplanation(college, fitScore, category, academicFit, preferenceFit);
 
-    const result = {
-      collegeId: String(college.id), // Ensure ID is a string for consistent matching
-      fitScore,
-      category,
-      explanation,
-      acceptanceRate, // Temporary field for redistribution
-      inputsUsed: {
-        academicStrength,
-        extracurricularStrength,
-        preferencesMatchScore: preferenceFit,
-        advancedModeUsed: false,
-      },
-      breakdown: {
-        academicFit: Math.round(academicFit),
-        preferenceFit: Math.round(preferenceFit),
-        ecFit: Math.round(ecFit),
-        majorFit: majorFitScore,
-        competitivenessAdjustment,
-      },
-    };
-    console.log(`Created match result for ${college.id}:`, { collegeId: result.collegeId, fitScore: result.fitScore });
-    return result;
+      const result = {
+        collegeId: String(college.id), // Ensure ID is a string for consistent matching
+        fitScore,
+        category,
+        explanation,
+        acceptanceRate, // Temporary field for redistribution
+        inputsUsed: {
+          academicStrength,
+          extracurricularStrength,
+          preferencesMatchScore: preferenceFit,
+          advancedModeUsed: false,
+        },
+        breakdown: {
+          academicFit: Math.round(academicFit),
+          preferenceFit: Math.round(preferenceFit),
+          ecFit: Math.round(ecFit),
+          majorFit: majorFitScore,
+          competitivenessAdjustment,
+        },
+      };
+      console.log(`Created match result for ${college.id}:`, { collegeId: result.collegeId, fitScore: result.fitScore });
+      return result;
+    } catch (error) {
+      console.error(`Error processing college ${college.id} (${college.name}):`, error);
+      // Return a basic result even if there's an error
+      return {
+        collegeId: String(college.id),
+        fitScore: 50,
+        category: 'target' as const,
+        explanation: 'Unable to calculate detailed fit score.',
+        acceptanceRate: college.acceptanceRate || 0.5, // Include for redistribution
+        inputsUsed: {
+          academicStrength: 3,
+          extracurricularStrength: 3,
+          preferencesMatchScore: 50,
+          advancedModeUsed: false,
+        },
+        breakdown: {
+          academicFit: 50,
+          preferenceFit: 50,
+          ecFit: 50,
+          majorFit: 0,
+          competitivenessAdjustment: 0,
+        },
+      };
+    }
   });
 
   // Sort by fit score (descending) for percentile-based redistribution
@@ -1078,7 +1103,15 @@ export function matchColleges(
   }
 
   // Remove temporary fields before returning
-  return sortedResults.map(({ acceptanceRate, ...result }) => result);
+  const finalResults = sortedResults.map((result) => {
+    // Type assertion for temporary field
+    const resultWithMetadata = result as typeof result & { acceptanceRate?: number };
+    const { acceptanceRate, ...cleanResult } = resultWithMetadata;
+    return cleanResult;
+  });
+  
+  console.log(`matchColleges: Returning ${finalResults.length} results`);
+  return finalResults;
 }
 
 // Export sample colleges and filtering functions for use in other modules

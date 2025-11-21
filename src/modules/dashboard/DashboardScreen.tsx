@@ -137,14 +137,23 @@ export const DashboardScreen = () => {
               // Re-fetch without state filter and apply only major filter
               const relaxedResponse = await fetchCollegesFromAPI(200);
               collegesData = relaxedResponse.colleges;
+              console.log(`Relaxed fetch returned ${collegesData.length} colleges`);
               
-              // Only apply major filter if specified
+              // Only apply major filter if specified, but be lenient
               if (majorAnswer) {
                 const majorPreferences = Array.isArray(majorAnswer.value) 
                   ? majorAnswer.value 
                   : [majorAnswer.value];
                 if (majorPreferences.length > 0) {
+                  const beforeMajor = collegesData.length;
                   collegesData = filterCollegesByMajor(collegesData, majorPreferences);
+                  console.log(`After major filter on relaxed data: ${beforeMajor} -> ${collegesData.length}`);
+                  
+                  // If major filter removes everything, skip it
+                  if (collegesData.length === 0) {
+                    console.warn('Major filter removed all colleges, skipping major filter');
+                    collegesData = relaxedResponse.colleges; // Reset to unfiltered
+                  }
                 }
               }
               

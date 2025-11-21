@@ -457,12 +457,9 @@ export async function fetchCollegesFromAPI(
 ): Promise<CollegeApiResponse> {
   // If no API key, return sample data
   if (!COLLEGE_SCORECARD_API_KEY) {
-    // Only show info in development mode
-    if (import.meta.env.DEV) {
-      console.info(
-        'ℹ️ College Scorecard API key not configured. Using sample data (8 colleges). Get a free API key at https://api.data.gov/signup/ and set VITE_COLLEGE_SCORECARD_API_KEY in .env to access 100+ colleges.'
-      );
-    }
+    console.info(
+      'ℹ️ College Scorecard API key not configured. Using sample data (8 colleges). Get a free API key at https://api.data.gov/signup/ and set VITE_COLLEGE_SCORECARD_API_KEY in .env to access 100+ colleges.'
+    );
     return {
       colleges: SAMPLE_COLLEGES,
       total: SAMPLE_COLLEGES.length,
