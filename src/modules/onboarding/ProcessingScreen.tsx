@@ -111,7 +111,8 @@ export const ProcessingScreen = () => {
 
       setStatus('Analyzing your profile...');
       // Generate initial matches using Simple Mode
-      const matchResults = matchColleges(answers, colleges);
+      // Skip filtering since we've already filtered the colleges
+      const matchResults = matchColleges(answers, colleges, true);
 
       setStatus('Calculating fit scores...');
       // Map results to college objects with fit data and breakdown
