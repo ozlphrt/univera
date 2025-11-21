@@ -15,7 +15,7 @@ import {
   getNextStep,
   ReadinessFactors,
 } from '@/utils/readinessCalculator';
-import { matchColleges, filterCollegesByLocation, filterCollegesByMajor, filterCollegesByEnvironment, filterCollegesBySize } from '@/utils/matchEngine';
+import { matchColleges, filterCollegesByLocation, filterCollegesByMajor, filterCollegesByEnvironment, filterCollegesBySize, SAMPLE_COLLEGES } from '@/utils/matchEngine';
 import { fetchCollegesFromAPI } from '@/api/collegeApi';
 import { OnboardingAnswer } from '@/modules/onboarding/types';
 import './DashboardScreen.css';
@@ -39,6 +39,7 @@ export const DashboardScreen = () => {
         const answersJson = localStorage.getItem('onboarding_answers');
         if (answersJson) {
           try {
+            setIsRefreshing(true);
             const answers: OnboardingAnswer[] = JSON.parse(answersJson);
             
             // Extract geographic preferences for API filtering
@@ -59,16 +60,27 @@ export const DashboardScreen = () => {
               ? cityToState[geographicPreferences.find(p => cityToState[p])!]
               : undefined;
             
+            console.log('Fetching colleges from API...', { stateFilter, limit: 200 });
+            
             // Try to fetch from API, fallback to sample data
             const apiResponse = await fetchCollegesFromAPI(200, {
               state: stateFilter,
             });
+            
+            console.log('API response:', { 
+              source: apiResponse.source, 
+              count: apiResponse.colleges.length 
+            });
+            
             let collegesData = apiResponse.colleges;
+            const originalCount = collegesData.length;
             
             // Apply ALL preference filters (geographic, major, environment, size)
             // Geographic filtering
             if (geographicPreferences.length > 0 && !geographicPreferences.includes('no-preference')) {
+              const beforeCount = collegesData.length;
               collegesData = filterCollegesByLocation(collegesData, geographicPreferences);
+              console.log(`Geographic filter: ${beforeCount} -> ${collegesData.length}`);
             }
             
             // Major filtering
@@ -78,7 +90,9 @@ export const DashboardScreen = () => {
                 ? majorAnswer.value 
                 : [majorAnswer.value];
               if (majorPreferences.length > 0) {
+                const beforeCount = collegesData.length;
                 collegesData = filterCollegesByMajor(collegesData, majorPreferences);
+                console.log(`Major filter: ${beforeCount} -> ${collegesData.length}`);
               }
             }
             
@@ -88,7 +102,9 @@ export const DashboardScreen = () => {
               const environmentPreferences = Array.isArray(environmentAnswer.value) 
                 ? environmentAnswer.value 
                 : [environmentAnswer.value];
+              const beforeCount = collegesData.length;
               collegesData = filterCollegesByEnvironment(collegesData, environmentPreferences);
+              console.log(`Environment filter: ${beforeCount} -> ${collegesData.length}`);
             }
             
             // School size filtering
@@ -97,10 +113,39 @@ export const DashboardScreen = () => {
               const sizePreferences = Array.isArray(sizeAnswer.value) 
                 ? sizeAnswer.value 
                 : [sizeAnswer.value];
+              const beforeCount = collegesData.length;
               collegesData = filterCollegesBySize(collegesData, sizePreferences);
+              console.log(`Size filter: ${beforeCount} -> ${collegesData.length}`);
+            }
+            
+            // If filters are too restrictive and we have very few colleges, relax filters
+            if (collegesData.length < 5 && originalCount > 0) {
+              console.warn(`Filters too restrictive: ${collegesData.length} colleges. Relaxing filters...`);
+              // Re-fetch without state filter and apply only major filter
+              const relaxedResponse = await fetchCollegesFromAPI(200);
+              collegesData = relaxedResponse.colleges;
+              
+              // Only apply major filter if specified
+              if (majorAnswer) {
+                const majorPreferences = Array.isArray(majorAnswer.value) 
+                  ? majorAnswer.value 
+                  : [majorAnswer.value];
+                if (majorPreferences.length > 0) {
+                  collegesData = filterCollegesByMajor(collegesData, majorPreferences);
+                }
+              }
+              
+              console.log(`After relaxing filters: ${collegesData.length} colleges`);
+            }
+            
+            if (collegesData.length === 0) {
+              console.error('No colleges found after filtering. Using sample data.');
+              // Fallback: use sample data from matchEngine
+              collegesData = SAMPLE_COLLEGES;
             }
             
             const matchResults = matchColleges(answers, collegesData);
+            console.log(`Matching ${collegesData.length} colleges, got ${matchResults.length} results`);
             
             const collegesWithFit = collegesData.map((college) => {
               const match = matchResults.find((r) => r.collegeId === college.id);
@@ -165,11 +210,48 @@ export const DashboardScreen = () => {
               };
             });
             
+            console.log(`Setting ${collegesWithFit.length} colleges in store`);
             setColleges(collegesWithFit);
-            localStorage.setItem('colleges_source', apiResponse.source);
+            localStorage.setItem('colleges_source', apiResponse?.source || 'sample');
           } catch (error) {
             console.error('Error regenerating colleges:', error);
+            // Fallback to sample data on error
+            try {
+              const answers: OnboardingAnswer[] = JSON.parse(answersJson);
+              const matchResults = matchColleges(answers, SAMPLE_COLLEGES);
+              const collegesWithFit = SAMPLE_COLLEGES.map((college) => {
+                const match = matchResults.find((r) => r.collegeId === college.id);
+                return {
+                  id: college.id,
+                  name: college.name,
+                  location: `${college.location.city}, ${college.location.state}`,
+                  type: college.type,
+                  fitScore: match?.fitScore,
+                  category: match?.category,
+                  fitExplanation: match?.explanation,
+                  logo: college.logo,
+                  breakdown: match?.breakdown,
+                  fullData: {
+                    size: college.size,
+                    acceptanceRate: college.acceptanceRate,
+                    environment: college.environment,
+                    competitiveness: college.academics?.competitiveness,
+                    popularMajors: college.academics?.popularMajors,
+                    cost: college.cost,
+                  },
+                };
+              });
+              setColleges(collegesWithFit);
+              localStorage.setItem('colleges_source', 'sample-fallback');
+              console.log('Using sample data as fallback');
+            } catch (fallbackError) {
+              console.error('Fallback also failed:', fallbackError);
+            }
+          } finally {
+            setIsRefreshing(false);
           }
+        } else {
+          console.warn('No onboarding answers found in localStorage');
         }
       };
       
