@@ -899,11 +899,16 @@ export function matchColleges(
   
   // If filtering resulted in no colleges, return empty array
   if (filteredColleges.length === 0) {
-    if (import.meta.env.DEV) {
-      console.warn('⚠️ No colleges match the selected preferences. Try adjusting your filters.');
-    }
+    console.warn('⚠️ No colleges to match. filteredColleges.length === 0');
     return [];
   }
+  
+  console.log(`matchColleges: Processing ${filteredColleges.length} colleges (skipFiltering: ${skipFiltering})`);
+  console.log('Sample college in matchColleges:', filteredColleges[0] ? {
+    id: filteredColleges[0].id,
+    name: filteredColleges[0].name,
+    type: typeof filteredColleges[0].id
+  } : 'none');
   
   // Extract key answers
   const academicAnswer = answers.find((a) => a.questionId === 'academic-confidence');
@@ -912,8 +917,11 @@ export function matchColleges(
   const academicStrength = academicAnswer?.value ?? 3; // Default to 3
   const extracurricularStrength = ecAnswer?.value ?? 3; // Default to 3
 
+  console.log('Academic strength:', academicStrength, 'EC strength:', extracurricularStrength);
+
   // Map filtered colleges to results with temporary fields for redistribution
   const resultsWithMetadata = filteredColleges.map((college) => {
+    console.log(`Processing college: ${college.id} (${college.name})`);
     const collegeDifficulty = getCollegeDifficulty(college.acceptanceRate);
     const academicFit = calculateAcademicFit(academicStrength, collegeDifficulty, college.acceptanceRate);
     const preferenceFit = calculatePreferenceFit(college, answers);
@@ -996,8 +1004,8 @@ export function matchColleges(
     // Generate explanation (fitScore is used in generateExplanation)
     const explanation = generateExplanation(college, fitScore, category, academicFit, preferenceFit);
 
-    return {
-      collegeId: college.id,
+    const result = {
+      collegeId: String(college.id), // Ensure ID is a string for consistent matching
       fitScore,
       category,
       explanation,
@@ -1016,6 +1024,8 @@ export function matchColleges(
         competitivenessAdjustment,
       },
     };
+    console.log(`Created match result for ${college.id}:`, { collegeId: result.collegeId, fitScore: result.fitScore });
+    return result;
   });
 
   // Sort by fit score (descending) for percentile-based redistribution

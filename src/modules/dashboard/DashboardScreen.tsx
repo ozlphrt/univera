@@ -158,16 +158,35 @@ export const DashboardScreen = () => {
             }
             
             // Log college IDs before matching
-            console.log('Colleges before matching:', collegesData.map(c => ({ id: c.id, name: c.name })));
+            console.log('Colleges before matching:', collegesData.map(c => ({ id: c.id, name: c.name, type: typeof c.id })));
+            console.log('Sample college structure:', collegesData[0] ? {
+              id: collegesData[0].id,
+              name: collegesData[0].name,
+              hasAcceptanceRate: 'acceptanceRate' in collegesData[0],
+              hasLocation: 'location' in collegesData[0]
+            } : 'no colleges');
             
             // Skip filtering in matchColleges since we've already filtered
             const matchResults = matchColleges(answers, collegesData, true);
             console.log(`Matching ${collegesData.length} colleges, got ${matchResults.length} results`);
-            console.log('Match results:', matchResults.map(r => ({ collegeId: r.collegeId, fitScore: r.fitScore })));
+            if (matchResults.length > 0) {
+              console.log('Match results:', matchResults.map(r => ({ collegeId: r.collegeId, fitScore: r.fitScore, type: typeof r.collegeId })));
+            } else {
+              console.warn('No match results! Checking why...');
+              console.log('College IDs:', collegesData.map(c => c.id));
+            }
             
             const collegesWithFit = collegesData.map((college) => {
-              const match = matchResults.find((r) => r.collegeId === college.id);
-              console.log(`Finding match for college ${college.id}:`, match ? 'found' : 'not found');
+              const collegeIdStr = String(college.id);
+              const match = matchResults.find((r) => {
+                const matchIdStr = String(r.collegeId);
+                return matchIdStr === collegeIdStr;
+              });
+              if (!match) {
+                console.warn(`No match found for college ${college.id} (${college.name}). Available match IDs:`, matchResults.map(r => r.collegeId));
+              } else {
+                console.log(`✓ Found match for ${college.name}: fitScore=${match.fitScore}`);
+              }
               // Ensure logo is set - use existing logo or generate from name
               let logo = college.logo;
               if (!logo || logo === '') {
