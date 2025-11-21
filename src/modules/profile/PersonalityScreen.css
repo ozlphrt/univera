@@ -1,0 +1,13 @@
+.personality-screen__intro {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-lg);
+}
+
+.personality-screen__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+

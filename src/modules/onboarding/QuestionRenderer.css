@@ -1,0 +1,52 @@
+.question-renderer {
+  width: 100%;
+}
+
+.question-renderer--chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+/* For questions with many options (like majors, regions), use more compact columns */
+.question-renderer--chips-many {
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .question-renderer--chips {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+  }
+  
+  .question-renderer--chips-many {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .question-renderer--chips {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .question-renderer--chips-many {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 901px) {
+  .question-renderer--chips {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .question-renderer--chips-many {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.question-renderer--slider {
+  padding: var(--spacing-lg) 0;
+}
+

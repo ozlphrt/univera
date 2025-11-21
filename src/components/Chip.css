@@ -1,0 +1,43 @@
+.chip {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-base);
+  cursor: pointer;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.chip:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(96, 165, 250, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.chip--selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%);
+  color: white;
+  border-color: rgba(148, 163, 184, 0.3);
+  box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4);
+  transform: translateY(-2px);
+}
+
+.chip--selected:hover {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 1) 0%, rgba(59, 130, 246, 1) 100%);
+  box-shadow: 0 8px 24px rgba(96, 165, 250, 0.5);
+  transform: translateY(-3px);
+}
+

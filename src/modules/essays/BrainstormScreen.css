@@ -1,0 +1,154 @@
+.brainstorm-screen__content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.brainstorm-screen__header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.brainstorm-screen__back-button {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.brainstorm-screen__back-button:hover {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--color-primary-dark);
+}
+
+.brainstorm-screen__essay-card,
+.brainstorm-screen__prompts-card,
+.brainstorm-screen__ideas-card {
+  margin-bottom: var(--spacing-xl);
+}
+
+.brainstorm-screen__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.brainstorm-screen__section-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.brainstorm-screen__prompt-section {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.brainstorm-screen__prompt {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.brainstorm-screen__helper {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.brainstorm-screen__prompts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.brainstorm-screen__prompt-item {
+  padding: var(--spacing-md);
+  background: rgba(30, 41, 59, 0.4);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-primary);
+}
+
+.brainstorm-screen__prompt-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.brainstorm-screen__add-idea {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.brainstorm-screen__add-idea .text-field {
+  flex: 1;
+}
+
+.brainstorm-screen__ideas-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.brainstorm-screen__idea-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: rgba(30, 41, 59, 0.4);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.brainstorm-screen__idea-content {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.brainstorm-screen__favorite-button {
+  background: none;
+  border: none;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color var(--transition-fast);
+}
+
+.brainstorm-screen__favorite-button:hover {
+  color: var(--color-warning);
+}
+
+.brainstorm-screen__favorite-button--active {
+  color: var(--color-warning);
+}
+
+.brainstorm-screen__idea-text {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.brainstorm-screen__remove-button {
+  flex-shrink: 0;
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.brainstorm-screen__empty-ideas {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xl);
+  margin: 0;
+}
+

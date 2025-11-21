@@ -1,0 +1,11 @@
+.screen-container {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: transparent;
+  position: relative;
+}
+
+.screen-container--padded {
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+

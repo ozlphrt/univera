@@ -1,0 +1,6 @@
+.preferences-screen__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+

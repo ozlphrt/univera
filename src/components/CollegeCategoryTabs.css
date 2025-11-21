@@ -1,0 +1,40 @@
+.college-category-tabs {
+  display: flex;
+  gap: var(--spacing-xs);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.college-category-tabs__tab {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.college-category-tabs__tab:hover {
+  background: rgba(30, 41, 59, 0.8);
+  color: var(--color-text-primary);
+}
+
+.college-category-tabs__tab--active {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%);
+  color: white;
+}
+
+.college-category-tabs__tab--active:hover {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 1) 0%, rgba(59, 130, 246, 1) 100%);
+}
+

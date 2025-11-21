@@ -1,0 +1,32 @@
+.extracurriculars-screen__intro {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-lg);
+}
+
+.extracurriculars-screen__activity-card {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.extracurriculars-screen__activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.extracurriculars-screen__activity-number {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.extracurriculars-screen__remove-button {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+}
+

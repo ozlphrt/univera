@@ -1,0 +1,96 @@
+.profile-section-screen__content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.profile-section-screen__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.profile-section-screen__back {
+  flex-shrink: 0;
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.profile-section-screen__back:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-primary-dark);
+}
+
+.profile-section-screen__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.profile-section-screen__form-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.profile-section-screen__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.profile-section-screen__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.profile-section-screen__chips {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.profile-section-screen__chip {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.profile-section-screen__chip:hover {
+  border-color: var(--color-primary);
+  background: rgba(30, 41, 59, 0.8);
+}
+
+.profile-section-screen__chip--selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%);
+  color: white;
+  border-color: rgba(96, 165, 250, 0.5);
+}
+
+.profile-section-screen__helper {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.profile-section-screen__saving {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  text-align: center;
+  margin: 0;
+}
+

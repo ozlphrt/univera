@@ -1,0 +1,43 @@
+.welcome-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.welcome-screen__content {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.welcome-screen__logo {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.welcome-screen__title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.welcome-screen__tagline {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-normal);
+}
+
+.welcome-screen__description {
+  margin-bottom: var(--spacing-2xl);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.welcome-screen__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+

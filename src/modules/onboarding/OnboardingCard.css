@@ -1,0 +1,95 @@
+.onboarding-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: transparent;
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+.onboarding-card__progress-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.onboarding-card__progress-bar {
+  flex: 1;
+  height: 10px;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.onboarding-card__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(96, 165, 250, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%);
+  transition: width var(--transition-base);
+  box-shadow: 0 2px 8px rgba(96, 165, 250, 0.4);
+}
+
+.onboarding-card__progress-text {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  min-width: 40px;
+  text-align: right;
+}
+
+.onboarding-card__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.onboarding-card__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.onboarding-card__description {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-2xl);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.onboarding-card__body {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.onboarding-card__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.onboarding-card__back-button {
+  flex: 1;
+}
+
+.onboarding-card__next-button {
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  .onboarding-card__title {
+    font-size: var(--font-size-3xl);
+  }
+}
+

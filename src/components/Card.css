@@ -1,0 +1,68 @@
+.card {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  padding: var(--spacing-xl);
+  width: 100%;
+  transition: all var(--transition-base);
+}
+
+.card--interactive {
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.card--interactive:hover {
+  background: rgba(30, 41, 59, 0.8);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+/* Reset button styles when Card is used as button */
+button.card {
+  border: inherit;
+  background: inherit;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  padding: inherit;
+  margin: 0;
+}
+
+button.card:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.card__header {
+  margin-bottom: var(--spacing-md);
+}
+
+.card__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.card__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+}
+
+.card__content {
+  color: var(--color-text-primary);
+}
+
+.card__footer {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+

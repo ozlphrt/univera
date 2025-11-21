@@ -1,0 +1,50 @@
+.essay-card {
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.essay-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm);
+}
+
+.essay-card__info {
+  flex: 1;
+}
+
+.essay-card__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.essay-card__type {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.essay-card__status {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  flex-shrink: 0;
+  margin-left: var(--spacing-md);
+}
+
+.essay-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.essay-card__idea-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
