@@ -4,13 +4,24 @@ import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
 // https://vitejs.dev/config/
+const base = process.env.NODE_ENV === 'production' ? '/univera/' : '/';
+
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/univera/' : '/',
+  base,
   plugins: [
     react(),
+    {
+      name: 'transform-html',
+      transformIndexHtml(html) {
+        return html.replace(
+          /href="\/vite\.svg"/g,
+          `href="${base}vite.svg"`
+        );
+      },
+    },
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', 'vite.svg'],
       manifest: {
         name: 'Univera — College Guidance Made Simple',
         short_name: 'Univera',
