@@ -219,7 +219,7 @@ export const CollegeDetailScreen = () => {
                 <div className="college-detail-screen__stat">
                   <span className="college-detail-screen__stat-label">Campus Environment</span>
                   <span className="college-detail-screen__stat-value">
-                    {(sampleCollege?.environment || college.fullData?.environment)?.charAt(0).toUpperCase() + (sampleCollege?.environment || college.fullData?.environment)?.slice(1)}
+                    {((sampleCollege?.environment || college.fullData?.environment) || '').charAt(0).toUpperCase() + ((sampleCollege?.environment || college.fullData?.environment) || '').slice(1)}
                   </span>
                 </div>
               )}
@@ -227,7 +227,7 @@ export const CollegeDetailScreen = () => {
                 <div className="college-detail-screen__stat">
                   <span className="college-detail-screen__stat-label">Competitiveness</span>
                   <span className="college-detail-screen__stat-value">
-                    {(sampleCollege?.academics?.competitiveness || college.fullData?.competitiveness)?.charAt(0).toUpperCase() + (sampleCollege?.academics?.competitiveness || college.fullData?.competitiveness)?.slice(1)}
+                    {((sampleCollege?.academics?.competitiveness || college.fullData?.competitiveness) || '').charAt(0).toUpperCase() + ((sampleCollege?.academics?.competitiveness || college.fullData?.competitiveness) || '').slice(1)}
                   </span>
                 </div>
               )}

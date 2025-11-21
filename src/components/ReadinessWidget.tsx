@@ -25,19 +25,11 @@ interface ReadinessWidgetProps {
 
 export const ReadinessWidget = ({ 
   score, 
-  statusLabel, 
   breakdown,
   collegeCounts,
   taskCounts 
 }: ReadinessWidgetProps) => {
   const navigate = useNavigate();
-  const getStatusLabel = () => {
-    if (statusLabel) return statusLabel;
-    if (score >= 80) return 'On Track';
-    if (score >= 60) return 'Getting There';
-    if (score >= 40) return 'Getting Started';
-    return 'Just Beginning';
-  };
 
   const getStatusColor = () => {
     if (score >= 80) return 'var(--color-success)';
@@ -50,14 +42,6 @@ export const ReadinessWidget = ({
   const radius = 50;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
-
-  // Calculate contribution from each factor
-  const weights = {
-    profileCompletion: 0.4,
-    collegeListBalance: 0.3,
-    taskProgress: 0.2,
-    hasMatches: 0.1,
-  };
 
 
 

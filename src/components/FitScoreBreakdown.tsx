@@ -361,7 +361,6 @@ export const FitScoreBreakdown = ({
     // Academic match
     if (userPreferences?.academicStrength && college.fullData?.acceptanceRate !== undefined) {
       const acceptanceRate = college.fullData.acceptanceRate;
-      const competitiveness = college.fullData.competitiveness;
       if (acceptanceRate >= 0.5 && userPreferences.academicStrength >= 3) {
         matches.push('Acceptance rate aligns with your academic profile');
       } else if (acceptanceRate < 0.3 && userPreferences.academicStrength < 3) {
