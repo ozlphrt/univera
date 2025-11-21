@@ -228,7 +228,6 @@ export const DashboardScreen = () => {
                   category: 'target' as const,
                   fitExplanation: 'Basic match - detailed analysis unavailable.',
                   logo: college.logo,
-                  website: college.website || undefined,
                   breakdown: {
                     academicFit: 50,
                     preferenceFit: 50,
