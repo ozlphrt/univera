@@ -118,7 +118,8 @@ export function getNextStep(
       action: () => {
         // Navigate to task - will be handled by component using React Router
         if (typeof window !== 'undefined') {
-          window.location.href = `/tasks/${nextTask.id}`;
+          const basePath = import.meta.env.PROD ? '/univera' : '';
+          window.location.href = `${basePath}/tasks/${nextTask.id}`;
         }
       },
       taskId: nextTask.id,
@@ -135,7 +136,8 @@ export function getNextStep(
       action: () => {
         // Navigate to profile - will be handled by component using React Router
         if (typeof window !== 'undefined') {
-          window.location.href = '/profile';
+          const basePath = import.meta.env.PROD ? '/univera' : '';
+          window.location.href = `${basePath}/profile`;
         }
       },
     };
@@ -148,7 +150,8 @@ export function getNextStep(
       ctaLabel: 'View Colleges',
       priority: 'high',
       action: () => {
-        window.location.href = '/colleges';
+        const basePath = import.meta.env.PROD ? '/univera' : '';
+        window.location.href = `${basePath}/colleges`;
       },
     };
   }
@@ -160,7 +163,8 @@ export function getNextStep(
       ctaLabel: 'Explore More',
       priority: 'medium',
       action: () => {
-        window.location.href = '/colleges';
+        const basePath = import.meta.env.PROD ? '/univera' : '';
+        window.location.href = `${basePath}/colleges`;
       },
     };
   }
@@ -174,7 +178,8 @@ export function getNextStep(
       action: () => {
         // Navigate to tasks - will be handled by component using React Router
         if (typeof window !== 'undefined') {
-          window.location.href = '/tasks';
+          const basePath = import.meta.env.PROD ? '/univera' : '';
+          window.location.href = `${basePath}/tasks`;
         }
       },
     };
