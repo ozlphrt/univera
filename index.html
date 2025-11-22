@@ -11,78 +11,22 @@
     <meta name="theme-color" content="#4A90E2" />
     <title>Univera — College Guidance Made Simple</title>
     <script>
-      // CRITICAL: This MUST run before service worker intercepts
+      // Remove ALL service workers and caches on every load
       (function() {
         'use strict';
-        
-        // STEP 1: Immediately unregister ALL service workers (before anything else)
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            if (registrations.length > 0) {
-              console.log('[INIT] Found', registrations.length, 'service workers - unregistering NOW...');
-              Promise.all(registrations.map(function(reg) {
-                return reg.unregister();
-              })).then(function() {
-                console.log('[INIT] ✅ All service workers unregistered');
-                // Clear all caches
-                if ('caches' in window) {
-                  caches.keys().then(function(names) {
-                    return Promise.all(names.map(function(name) {
-                      return caches.delete(name);
-                    }));
-                  }).then(function() {
-                    console.log('[INIT] ✅ All caches cleared');
-                  });
-                }
-              });
-            }
+            registrations.forEach(function(reg) { reg.unregister(); });
           });
         }
-        
-        // STEP 2: Listen for service worker messages (force reload if needed)
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.addEventListener('message', function(event) {
-            if (event.data && (event.data.type === 'SW_DESTROYED' || event.data.type === 'FORCE_RELOAD')) {
-              console.log('[INIT] Service worker destroyed - reloading...');
-              window.location.reload();
-            }
-          });
-        }
-        
-        // STEP 3: Check for old bundle IMMEDIATELY
-        var scripts = document.querySelectorAll('script[src*="index-"]');
-        var hasOldBundle = false;
-        for (var i = 0; i < scripts.length; i++) {
-          var src = scripts[i].getAttribute('src') || '';
-          if (src.includes('index-BcQdPOJw.js')) {
-            hasOldBundle = true;
-            console.error('[INIT] ❌ OLD BUNDLE DETECTED:', src);
-            break;
-          }
-        }
-        
-        if (hasOldBundle) {
-          // Force reload with cache bypass
-          console.error('[INIT] Forcing reload to get new bundle...');
-          window.location.href = window.location.origin + '/univera/?v=' + Date.now() + '&nocache=1&sw=destroyed';
-          return;
-        }
-        
-        // STEP 4: Register new self-destructing service worker (only if no old bundle)
-        if ('serviceWorker' in navigator && !hasOldBundle) {
-          navigator.serviceWorker.register('/univera/sw.js?v=' + Date.now(), { 
-            scope: '/univera/',
-            updateViaCache: 'none'
-          }).then(function(registration) {
-            console.log('[INIT] ✅ New SW registered');
-            registration.update();
-          }).catch(function(error) {
-            console.log('[INIT] SW registration failed:', error);
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            names.forEach(function(name) { caches.delete(name); });
           });
         }
       })();
     </script>
-    <script type="module" crossorigin src="/univera/assets/index-CUtXYlhk.js"></script>
+    <script type="module" crossorigin src="/univera/assets/index-DoSlHE5j.js"></script>
     <link rel="stylesheet" crossorigin href="/univera/assets/index-CtR73Qo1.css">
   </head>
   <body>
