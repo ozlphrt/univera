@@ -10,42 +10,7 @@
     <meta name="description" content="College Guidance Made Simple" />
     <meta name="theme-color" content="#4A90E2" />
     <title>Univera — College Guidance Made Simple</title>
-    <script>
-      // Force unregister ALL service workers and clear caches
-      (function() {
-        'use strict';
-        var cleared = false;
-        function clearEverything() {
-          if (cleared) return;
-          cleared = true;
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-              if (registrations.length > 0) {
-                console.log('[CLEAR] Unregistering', registrations.length, 'service workers');
-                Promise.all(registrations.map(function(reg) { return reg.unregister(); })).then(function() {
-                  console.log('[CLEAR] Service workers cleared');
-                });
-              }
-            });
-          }
-          if ('caches' in window) {
-            caches.keys().then(function(names) {
-              Promise.all(names.map(function(name) { return caches.delete(name); })).then(function() {
-                console.log('[CLEAR] Caches cleared');
-              });
-            });
-          }
-        }
-        clearEverything();
-        // Also run after DOM loads
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', clearEverything);
-        } else {
-          clearEverything();
-        }
-      })();
-    </script>
-    <script type="module" crossorigin src="/univera/assets/index-DoSlHE5j.js"></script>
+    <script type="module" crossorigin src="/univera/assets/index-Ba5gzZGy.js"></script>
     <link rel="stylesheet" crossorigin href="/univera/assets/index-CtR73Qo1.css">
   </head>
   <body>
