@@ -9,9 +9,26 @@
     <title>Univera — College Guidance Made Simple</title>
     <script type="module" crossorigin src="/univera/assets/index-CRvsvHbF.js"></script>
     <link rel="stylesheet" crossorigin href="/univera/assets/index-CtR73Qo1.css">
-  <link rel="manifest" href="/univera/manifest.webmanifest"></head>
+  </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Immediately unregister any existing service workers
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
+        });
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            for (let name of names) {
+              caches.delete(name);
+            }
+          });
+        }
+      }
+    </script>
   </body>
 </html>
 
