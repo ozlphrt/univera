@@ -11,18 +11,37 @@
     <meta name="theme-color" content="#4A90E2" />
     <title>Univera — College Guidance Made Simple</title>
     <script>
-      // Remove ALL service workers and caches on every load
+      // Force unregister ALL service workers and clear caches
       (function() {
         'use strict';
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            registrations.forEach(function(reg) { reg.unregister(); });
-          });
+        var cleared = false;
+        function clearEverything() {
+          if (cleared) return;
+          cleared = true;
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+              if (registrations.length > 0) {
+                console.log('[CLEAR] Unregistering', registrations.length, 'service workers');
+                Promise.all(registrations.map(function(reg) { return reg.unregister(); })).then(function() {
+                  console.log('[CLEAR] Service workers cleared');
+                });
+              }
+            });
+          }
+          if ('caches' in window) {
+            caches.keys().then(function(names) {
+              Promise.all(names.map(function(name) { return caches.delete(name); })).then(function() {
+                console.log('[CLEAR] Caches cleared');
+              });
+            });
+          }
         }
-        if ('caches' in window) {
-          caches.keys().then(function(names) {
-            names.forEach(function(name) { caches.delete(name); });
-          });
+        clearEverything();
+        // Also run after DOM loads
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', clearEverything);
+        } else {
+          clearEverything();
         }
       })();
     </script>
