@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Direct Load - No Service Worker</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <h1>Direct Bundle Test</h1>
+  <div id="status"></div>
+  <script>
+    var status = document.getElementById('status');
+    
+    // Check which bundle is referenced
+    var scripts = document.querySelectorAll('script[src*="index-"]');
+    var bundleName = 'none';
+    scripts.forEach(function(s) {
+      var src = s.getAttribute('src') || '';
+      if (src.includes('index-')) {
+        bundleName = src.split('/').pop();
+      }
+    });
+    
+    // Load the new bundle directly
+    var script = document.createElement('script');
+    script.type = 'module';
+    script.crossOrigin = 'anonymous';
+    script.src = '/univera/assets/index-Ba5gzZGy.js?v=' + Date.now();
+    
+    script.onload = function() {
+      status.innerHTML = '<div class="status success">✅ New bundle loaded: index-Ba5gzZGy.js</div>';
+      status.innerHTML += '<p>Check console for API key debug message</p>';
+      status.innerHTML += '<p><a href="/univera/">Go to app</a></p>';
+    };
+    
+    script.onerror = function() {
+      status.innerHTML = '<div class="status error">❌ Failed to load new bundle</div>';
+      status.innerHTML += '<p>Current bundle: ' + bundleName + '</p>';
+    };
+    
+    document.head.appendChild(script);
+    
+    // Also unregister service workers
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(r) { r.unregister(); });
+      });
+    }
+  </script>
+</body>
+</html>
+
