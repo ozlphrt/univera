@@ -13,18 +13,43 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>Univera — College Guidance Made Simple</title>
     <script>
-      // Explicitly prevent service worker registration
-      if ('serviceWorker' in navigator) {
-        // Override register to prevent any registration
-        navigator.serviceWorker.register = function() {
-          console.warn('Service worker registration blocked');
-          return Promise.reject(new Error('Service workers disabled'));
-        };
-        // Unregister any existing ones
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          registrations.forEach(function(reg) { reg.unregister(); });
-        });
-      }
+      // CRITICAL: Block service workers completely
+      (function() {
+        if ('serviceWorker' in navigator) {
+          // Override register to prevent any registration
+          var originalRegister = navigator.serviceWorker.register;
+          navigator.serviceWorker.register = function() {
+            console.warn('[BLOCKED] Service worker registration attempted but blocked');
+            return Promise.reject(new Error('Service workers are disabled'));
+          };
+          
+          // Immediately unregister all existing service workers
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            if (registrations.length > 0) {
+              console.log('[CLEAR] Unregistering', registrations.length, 'service workers');
+              Promise.all(registrations.map(function(reg) {
+                return reg.unregister();
+              })).then(function() {
+                console.log('[CLEAR] All service workers unregistered');
+                // Clear all caches
+                if ('caches' in window) {
+                  caches.keys().then(function(names) {
+                    Promise.all(names.map(function(name) {
+                      return caches.delete(name);
+                    })).then(function() {
+                      console.log('[CLEAR] All caches cleared');
+                      // Reload to get fresh content
+                      if (!window.location.search.includes('reloaded')) {
+                        window.location.href = window.location.href.split('?')[0] + '?reloaded=1&v=' + Date.now();
+                      }
+                    });
+                  });
+                }
+              });
+            }
+          });
+        }
+      })();
     </script>
     <script type="module" crossorigin src="/univera/assets/index-Ba5gzZGy.js"></script>
     <link rel="stylesheet" crossorigin href="/univera/assets/index-CtR73Qo1.css">

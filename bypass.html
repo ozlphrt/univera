@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Loading Univera...</title>
+  <script>
+    // This page loads OUTSIDE service worker scope
+    // It immediately redirects to the app with cache-busting
+    (function() {
+      // Unregister any service workers first
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          registrations.forEach(function(reg) {
+            reg.unregister();
+          });
+        });
+      }
+      // Clear caches
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          names.forEach(function(name) {
+            caches.delete(name);
+          });
+        });
+      }
+      // Redirect to app with cache-busting
+      var url = '/univera/index.html?v=' + Date.now() + '&nocache=1&bypass=1';
+      window.location.replace(url);
+    })();
+  </script>
+</head>
+<body>
+  <p>Loading...</p>
+</body>
+</html>
+
