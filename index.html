@@ -12,54 +12,54 @@
     <title>Univera — College Guidance Made Simple</title>
     <script>
       // CRITICAL: Run IMMEDIATELY before anything else loads
-      // This must run before service worker intercepts requests
       (function() {
         'use strict';
         
-        // Check for old bundle FIRST - if detected, redirect to kill page
-        var scripts = document.querySelectorAll('script[src*="index-"]');
-        var hasOldBundle = false;
-        scripts.forEach(function(script) {
-          var src = script.getAttribute('src') || '';
-          if (src.includes('index-BcQdPOJw.js')) {
-            hasOldBundle = true;
-          }
-        });
+        // Register self-destructing service worker FIRST
+        if ('serviceWorker' in navigator) {
+          // Register the self-destructing service worker
+          navigator.serviceWorker.register('/univera/sw.js', { scope: '/univera/' })
+            .then(function(registration) {
+              console.log('✅ Self-destructing service worker registered');
+              // Force update
+              registration.update();
+              // Wait a moment, then unregister all
+              setTimeout(function() {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                  registrations.forEach(function(reg) {
+                    reg.unregister();
+                  });
+                });
+                if ('caches' in window) {
+                  caches.keys().then(function(names) {
+                    return Promise.all(names.map(function(name) {
+                      return caches.delete(name);
+                    }));
+                  });
+                }
+              }, 500);
+            })
+            .catch(function(error) {
+              console.log('Service worker registration failed (expected if already cleared):', error);
+            });
+        }
         
-        // If old bundle detected OR service worker is active, redirect to kill page
-        if (hasOldBundle || ('serviceWorker' in navigator)) {
-          navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            if (registrations.length > 0 || hasOldBundle) {
-              console.error('❌ OLD BUNDLE OR SERVICE WORKER DETECTED! Redirecting to kill page...');
-              var killPageUrl = window.location.origin + '/univera/sw-kill.html';
-              window.location.href = killPageUrl;
-              return;
+        // Check for old bundle and redirect if found
+        setTimeout(function() {
+          var scripts = document.querySelectorAll('script[src*="index-"]');
+          var hasOldBundle = false;
+          scripts.forEach(function(script) {
+            var src = script.getAttribute('src') || '';
+            if (src.includes('index-BcQdPOJw.js')) {
+              hasOldBundle = true;
             }
           });
-        }
-        
-        // Unregister ALL service workers immediately (backup)
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            registrations.forEach(function(registration) {
-              registration.unregister().then(function(success) {
-                if (success) {
-                  console.log('✅ Service worker unregistered');
-                }
-              });
-            });
-          });
-          // Clear all caches
-          if ('caches' in window) {
-            caches.keys().then(function(names) {
-              return Promise.all(names.map(function(name) {
-                return caches.delete(name);
-              }));
-            }).then(function() {
-              console.log('✅ All caches cleared');
-            });
+          
+          if (hasOldBundle) {
+            console.error('❌ OLD BUNDLE DETECTED! Redirecting to kill page...');
+            window.location.href = window.location.origin + '/univera/sw-kill.html';
           }
-        }
+        }, 1000);
       })();
     </script>
     <script type="module" crossorigin src="/univera/assets/index-CRvsvHbF.js"></script>
