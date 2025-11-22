@@ -139,7 +139,8 @@
       updateStatus('Cleanup complete. Reloading...', 'success');
       
       setTimeout(() => {
-        window.location.href = '/univera/';
+        // Use relative path to work regardless of base path
+        window.location.href = window.location.origin + '/univera/';
       }, 1000);
     }
 
