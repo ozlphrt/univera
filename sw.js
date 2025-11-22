@@ -1,29 +1,36 @@
-// SELF-DESTRUCTING SERVICE WORKER
-// This service worker immediately unregisters itself and clears all caches
-// It's deployed to replace any old service workers
+// SELF-DESTRUCTING SERVICE WORKER - VERSION 2
+// This immediately unregisters itself and clears ALL caches
+// Deployed to replace old service workers that cache old bundles
+
+const CACHE_VERSION = 'v2-destroy';
 
 self.addEventListener('install', function(event) {
-  // Skip waiting immediately
+  console.log('[SW] Installing self-destructing service worker...');
+  // Skip waiting immediately - take control right away
   self.skipWaiting();
 });
 
 self.addEventListener('activate', function(event) {
-  // Claim all clients immediately
+  console.log('[SW] Activating - destroying all caches and unregistering...');
   event.waitUntil(
-    self.clients.claim().then(function() {
-      // Delete all caches
-      return caches.keys().then(function(cacheNames) {
+    Promise.all([
+      // Delete ALL caches
+      caches.keys().then(function(cacheNames) {
+        console.log('[SW] Deleting caches:', cacheNames);
         return Promise.all(
           cacheNames.map(function(cacheName) {
             return caches.delete(cacheName);
           })
         );
-      });
-    }).then(function() {
-      // Unregister this service worker
+      }),
+      // Claim all clients immediately
+      self.clients.claim()
+    ]).then(function() {
+      // Unregister THIS service worker
+      console.log('[SW] Unregistering service worker...');
       return self.registration.unregister();
     }).then(function(success) {
-      console.log('✅ Service worker self-destructed:', success);
+      console.log('[SW] ✅ Service worker unregistered:', success);
       // Notify all clients to reload
       return self.clients.matchAll().then(function(clients) {
         clients.forEach(function(client) {
@@ -33,13 +40,24 @@ self.addEventListener('activate', function(event) {
           });
         });
       });
+    }).catch(function(error) {
+      console.error('[SW] Error during destruction:', error);
     })
   );
 });
 
-// Don't intercept any fetch requests - let everything go to network
+// CRITICAL: Don't intercept ANY requests - pass everything to network
+// This ensures fresh HTML/JS loads even if old service worker was active
 self.addEventListener('fetch', function(event) {
-  // Do nothing - just pass through to network
-  event.respondWith(fetch(event.request));
+  // Always fetch from network - never cache
+  event.respondWith(
+    fetch(event.request).catch(function() {
+      // If fetch fails, return a response that triggers reload
+      return new Response('Service worker disabled - please reload', {
+        status: 200,
+        headers: { 'Content-Type': 'text/html' }
+      });
+    })
+  );
 });
 

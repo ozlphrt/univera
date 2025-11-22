@@ -11,55 +11,84 @@
     <meta name="theme-color" content="#4A90E2" />
     <title>Univera — College Guidance Made Simple</title>
     <script>
-      // CRITICAL: Run IMMEDIATELY before anything else loads
+      // CRITICAL: Run IMMEDIATELY - before service worker intercepts
       (function() {
         'use strict';
         
-        // Register self-destructing service worker FIRST
+        // STEP 1: Immediately unregister ALL existing service workers
         if ('serviceWorker' in navigator) {
-          // Register the self-destructing service worker
-          navigator.serviceWorker.register('/univera/sw.js', { scope: '/univera/' })
-            .then(function(registration) {
-              console.log('✅ Self-destructing service worker registered');
-              // Force update
-              registration.update();
-              // Wait a moment, then unregister all
-              setTimeout(function() {
-                navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                  registrations.forEach(function(reg) {
-                    reg.unregister();
-                  });
-                });
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            if (registrations.length > 0) {
+              console.log('[INIT] Found', registrations.length, 'service workers - unregistering...');
+              Promise.all(registrations.map(function(reg) {
+                return reg.unregister();
+              })).then(function() {
+                console.log('[INIT] ✅ All service workers unregistered');
+                // Clear all caches
                 if ('caches' in window) {
                   caches.keys().then(function(names) {
                     return Promise.all(names.map(function(name) {
                       return caches.delete(name);
                     }));
+                  }).then(function() {
+                    console.log('[INIT] ✅ All caches cleared');
                   });
                 }
-              }, 500);
-            })
-            .catch(function(error) {
-              console.log('Service worker registration failed (expected if already cleared):', error);
-            });
-        }
-        
-        // Check for old bundle and redirect if found
-        setTimeout(function() {
-          var scripts = document.querySelectorAll('script[src*="index-"]');
-          var hasOldBundle = false;
-          scripts.forEach(function(script) {
-            var src = script.getAttribute('src') || '';
-            if (src.includes('index-BcQdPOJw.js')) {
-              hasOldBundle = true;
+              });
             }
           });
-          
-          if (hasOldBundle) {
-            console.error('❌ OLD BUNDLE DETECTED! Redirecting to kill page...');
-            window.location.href = window.location.origin + '/univera/sw-kill.html';
+        }
+        
+        // STEP 2: Check for old bundle IMMEDIATELY (before scripts load)
+        // This runs synchronously before the page fully loads
+        var scripts = document.querySelectorAll('script[src*="index-"]');
+        var hasOldBundle = false;
+        for (var i = 0; i < scripts.length; i++) {
+          var src = scripts[i].getAttribute('src') || '';
+          if (src.includes('index-BcQdPOJw.js')) {
+            hasOldBundle = true;
+            break;
           }
-        }, 1000);
+        }
+        
+        // STEP 3: If old bundle detected, force reload with cache bypass
+        if (hasOldBundle) {
+          console.error('[INIT] ❌ OLD BUNDLE DETECTED! Forcing reload...');
+          // Clear everything and reload
+          if ('caches' in window) {
+            caches.keys().then(function(names) {
+              return Promise.all(names.map(function(name) {
+                return caches.delete(name);
+              }));
+            }).then(function() {
+              window.location.href = window.location.origin + '/univera/?v=' + Date.now() + '&nocache=1';
+            });
+          } else {
+            window.location.href = window.location.origin + '/univera/?v=' + Date.now() + '&nocache=1';
+          }
+          return; // Stop execution
+        }
+        
+        // STEP 4: Register self-destructing service worker (only if no old bundle)
+        if ('serviceWorker' in navigator && !hasOldBundle) {
+          navigator.serviceWorker.register('/univera/sw.js?v=' + Date.now(), { 
+            scope: '/univera/',
+            updateViaCache: 'none' // Never cache the service worker itself
+          }).then(function(registration) {
+            console.log('[INIT] ✅ Self-destructing SW registered');
+            // Force immediate update
+            registration.update();
+            // Listen for messages from service worker
+            navigator.serviceWorker.addEventListener('message', function(event) {
+              if (event.data && event.data.type === 'SW_DESTROYED') {
+                console.log('[INIT] Service worker destroyed - reloading...');
+                window.location.reload();
+              }
+            });
+          }).catch(function(error) {
+            console.log('[INIT] SW registration failed (OK if already cleared):', error);
+          });
+        }
       })();
     </script>
     <script type="module" crossorigin src="/univera/assets/index-CRvsvHbF.js"></script>
