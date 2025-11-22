@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unregister Service Worker</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .status {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      background: #2a2a2a;
+    }
+    .success { background: #0a5; }
+    .error { background: #a05; }
+    .info { background: #05a; }
+    button {
+      background: #4A90E2;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    button:hover { background: #357ABD; }
+    #log {
+      background: #000;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Service Worker Cleanup</h1>
+  <div id="status" class="status info">Ready to unregister service workers...</div>
+  <button onclick="unregisterAll()">Unregister All Service Workers</button>
+  <button onclick="clearAllCaches()">Clear All Caches</button>
+  <button onclick="doEverything()">Do Everything & Reload</button>
+  <div id="log"></div>
+
+  <script>
+    function log(msg) {
+      const logEl = document.getElementById('log');
+      const time = new Date().toLocaleTimeString();
+      logEl.innerHTML += `[${time}] ${msg}<br>`;
+      logEl.scrollTop = logEl.scrollHeight;
+      console.log(msg);
+    }
+
+    function updateStatus(msg, type = 'info') {
+      const statusEl = document.getElementById('status');
+      statusEl.textContent = msg;
+      statusEl.className = `status ${type}`;
+    }
+
+    async function unregisterAll() {
+      if (!('serviceWorker' in navigator)) {
+        updateStatus('Service Workers not supported', 'error');
+        return;
+      }
+
+      try {
+        log('Getting service worker registrations...');
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        log(`Found ${registrations.length} service worker(s)`);
+
+        if (registrations.length === 0) {
+          updateStatus('No service workers registered', 'success');
+          return;
+        }
+
+        for (const registration of registrations) {
+          log(`Unregistering: ${registration.scope}`);
+          const unregistered = await registration.unregister();
+          log(`Unregistered: ${unregistered}`);
+        }
+
+        updateStatus(`Unregistered ${registrations.length} service worker(s)`, 'success');
+      } catch (error) {
+        log(`Error: ${error.message}`);
+        updateStatus(`Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function clearAllCaches() {
+      if (!('caches' in window)) {
+        updateStatus('Cache API not supported', 'error');
+        return;
+      }
+
+      try {
+        log('Getting cache names...');
+        const cacheNames = await caches.keys();
+        log(`Found ${cacheNames.length} cache(s)`);
+
+        if (cacheNames.length === 0) {
+          updateStatus('No caches found', 'success');
+          return;
+        }
+
+        for (const cacheName of cacheNames) {
+          log(`Deleting cache: ${cacheName}`);
+          await caches.delete(cacheName);
+          log(`Deleted: ${cacheName}`);
+        }
+
+        updateStatus(`Cleared ${cacheNames.length} cache(s)`, 'success');
+      } catch (error) {
+        log(`Error: ${error.message}`);
+        updateStatus(`Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function doEverything() {
+      updateStatus('Cleaning up...', 'info');
+      log('=== Starting cleanup ===');
+      
+      await unregisterAll();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await clearAllCaches();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      log('=== Cleanup complete ===');
+      updateStatus('Cleanup complete. Reloading...', 'success');
+      
+      setTimeout(() => {
+        window.location.href = '/univera/';
+      }, 1000);
+    }
+
+    // Auto-run on load
+    window.addEventListener('load', () => {
+      log('Page loaded. Checking service workers...');
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        if (regs.length > 0) {
+          log(`Found ${regs.length} active service worker(s):`);
+          regs.forEach(reg => {
+            log(`  - Scope: ${reg.scope}`);
+            log(`  - Active: ${reg.active ? reg.active.scriptURL : 'none'}`);
+          });
+          updateStatus(`Found ${regs.length} service worker(s) - Click "Do Everything & Reload"`, 'info');
+        } else {
+          updateStatus('No service workers found', 'success');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
