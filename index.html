@@ -15,7 +15,30 @@
       // This must run before service worker intercepts requests
       (function() {
         'use strict';
-        // Unregister ALL service workers immediately
+        
+        // Check for old bundle FIRST - if detected, redirect to kill page
+        var scripts = document.querySelectorAll('script[src*="index-"]');
+        var hasOldBundle = false;
+        scripts.forEach(function(script) {
+          var src = script.getAttribute('src') || '';
+          if (src.includes('index-BcQdPOJw.js')) {
+            hasOldBundle = true;
+          }
+        });
+        
+        // If old bundle detected OR service worker is active, redirect to kill page
+        if (hasOldBundle || ('serviceWorker' in navigator)) {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            if (registrations.length > 0 || hasOldBundle) {
+              console.error('❌ OLD BUNDLE OR SERVICE WORKER DETECTED! Redirecting to kill page...');
+              var killPageUrl = window.location.origin + '/univera/sw-kill.html';
+              window.location.href = killPageUrl;
+              return;
+            }
+          });
+        }
+        
+        // Unregister ALL service workers immediately (backup)
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistrations().then(function(registrations) {
             registrations.forEach(function(registration) {
@@ -36,22 +59,6 @@
               console.log('✅ All caches cleared');
             });
           }
-        }
-        // Check for old bundle hash in URL or force reload if old bundle detected
-        var currentScripts = document.querySelectorAll('script[src*="index-"]');
-        var hasOldBundle = false;
-        currentScripts.forEach(function(script) {
-          var src = script.getAttribute('src') || '';
-          if (src.includes('index-BcQdPOJw.js')) {
-            hasOldBundle = true;
-          }
-        });
-        // If old bundle detected, force reload with cache bypass
-        if (hasOldBundle) {
-          console.error('❌ OLD BUNDLE DETECTED! Forcing reload...');
-          setTimeout(function() {
-            window.location.href = window.location.href.split('?')[0] + '?v=' + Date.now() + '&nocache=1&_sw=disabled';
-          }, 100);
         }
       })();
     </script>
